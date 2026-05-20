@@ -8,7 +8,7 @@ Das ist mein Projekt, in dem ich zeige, wie man schmutzige Daten in Google Sheet
 
 ## Worum geht es?
 
-Bei Data Analytics verbringt man echt viel Zeit damit, Daten erstmal sauber zu machen. Ich habe oft gesehen, wie chaotisch Daten aussehen, die aus Systemen kommen – Duplikate, falsche Datumsformate, komische Währungen, Leerzeichen überall. 
+Bei Data Analytics verbringt man echt viel Zeit damit, Daten erstmal sauber zu machen. Ich habe oft gesehen, wie chaotisch Daten aussehen, die aus Systemen kommen. Duplikate, falsche Datumsformate, komische Währungen, Leerzeichen überall. 
 
 Deshalb habe ich diese Präsentation gemacht. Sie zeigt die wichtigsten Tricks und Shortcuts, mit denen man viel schneller arbeitet.
 
