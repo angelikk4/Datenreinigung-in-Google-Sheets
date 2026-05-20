@@ -1,0 +1,971 @@
+<tbody class="divide-y divide-gray-100">
+                            
+                            </tr>
+                        </tbody><!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sheets Datenreinigung - Angelika Grzybowska</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        .slide {
+            min-height: 100vh;
+            page-break-after: always;
+        }
+        @media print {
+            .slide {
+                page-break-after: always;
+                break-after: page;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+        .keyboard-key {
+            background: linear-gradient(145deg, #f3f4f6, #ffffff);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-bottom: 3px solid #d1d5db;
+        }
+        .keyboard-key:active {
+            border-bottom: 1px solid #d1d5db;
+            transform: translateY(2px);
+        }
+        .data-table {
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+        }
+        .highlight-clean {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        .highlight-dirty {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        .gradient-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Navigation -->
+    <nav class="no-print fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <span class="font-bold text-lg">Google Sheets Masterclass</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="window.print()" class="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition flex items-center space-x-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                        </svg>
+                        <span>Als PDF speichern</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Slide 1: Title -->
+    <section class="slide flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white relative overflow-hidden">
+        <div class="absolute inset-0 opacity-20">
+            <div class="absolute top-20 left-20 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+            <div class="absolute top-40 right-20 w-72 h-72 bg-emerald-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-1000"></div>
+            <div class="absolute -bottom-8 left-1/2 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-2000"></div>
+        </div>
+        <div class="relative z-10 text-center px-8 max-w-5xl">
+            <div class="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-8">
+                <span class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
+                <span class="text-sm font-medium">Data Analyst Training</span>
+            </div>
+            <h1 class="text-6xl md:text-7xl font-extrabold mb-6 leading-tight">
+                <span class="bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                    Datenreinigung
+                </span>
+                <br>
+                <span class="text-4xl md:text-5xl font-light">in Google Sheets</span>
+            </h1>
+            <p class="text-2xl text-gray-300 mb-8 font-light">Von schmutzigen Daten zu sauberen Erkenntnissen</p>
+            <div class="flex items-center justify-center space-x-6">
+                <div class="flex items-center space-x-3 bg-white/10 backdrop-blur-sm rounded-xl px-6 py-4">
+                    <div class="w-14 h-14 bg-gradient-to-br from-pink-500 to-rose-600 rounded-full flex items-center justify-center text-2xl font-bold">
+                        AG
+                    </div>
+                    <div class="text-left">
+                        <p class="font-semibold text-lg">Angelika Grzybowska</p>
+                        <p class="text-gray-400 text-sm">Data Analyst & Excel Expertin</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 flex justify-center space-x-8 text-sm text-gray-400">
+                <span class="flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/></svg>
+                    <span>5 Advanced Shortcuts</span>
+                </span>
+                <span class="flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>Praxisbeispiele</span>
+                </span>
+                <span class="flex items-center space-x-2">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                    <span>Windows & Mac</span>
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 2: Agenda -->
+    <section class="slide flex items-center justify-center bg-white py-20">
+        <div class="max-w-6xl mx-auto px-8 w-full">
+            <div class="text-center mb-16">
+                <p class="text-emerald-600 font-semibold tracking-wide uppercase text-sm mb-2">Was wir heute lernen</p>
+                <h2 class="text-5xl font-bold text-gray-900">Agenda</h2>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="card-hover bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl p-6 border border-emerald-100">
+                    <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center text-white font-bold text-xl mb-4">1</div>
+                    <h3 class="font-bold text-lg text-gray-900 mb-2">Das Problem</h3>
+                    <p class="text-gray-600 text-sm">Warum Datenreinigung essenziell ist für jeden Data Analyst</p>
+                </div>
+                <div class="card-hover bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100">
+                    <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center text-white font-bold text-xl mb-4">2</div>
+                    <h3 class="font-bold text-lg text-gray-900 mb-2">Schmutzige Daten</h3>
+                    <p class="text-gray-600 text-sm">Realistisches Beispiel mit typischen Datenproblemen</p>
+                </div>
+                <div class="card-hover bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100">
+                    <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center text-white font-bold text-xl mb-4">3</div>
+                    <h3 class="font-bold text-lg text-gray-900 mb-2">5 Power-Shortcuts</h3>
+                    <p class="text-gray-600 text-sm">Fortgeschrittene Tastenkombinationen für maximale Effizienz</p>
+                </div>
+                <div class="card-hover bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl p-6 border border-orange-100">
+                    <div class="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center text-white font-bold text-xl mb-4">4</div>
+                    <h3 class="font-bold text-lg text-gray-900 mb-2">Live-Demo</h3>
+                    <p class="text-gray-600 text-sm">Schritt-für-Schritt Datenreinigung in der Praxis</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 3: The Problem -->
+    <section class="slide flex items-center justify-center bg-gray-50 py-20">
+        <div class="max-w-6xl mx-auto px-8 w-full">
+            <div class="text-center mb-12">
+                <p class="text-red-600 font-semibold tracking-wide uppercase text-sm mb-2">Die Realität</p>
+                <h2 class="text-5xl font-bold text-gray-900 mb-4">Das Daten-Chaos</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">80% der Zeit eines Data Analysts wird mit Datenaufbereitung verbracht. Lassen Sie uns das ändern!</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-2xl p-8 shadow-lg">
+                    <div class="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Inkonsistente Formate</h3>
+                    <p class="text-gray-600">Datumsangaben als Text, Zahlen mit Komma/Punkt-Verwirrung, gemischte Einheiten</p>
+                </div>
+                <div class="bg-white rounded-2xl p-8 shadow-lg">
+                    <div class="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Duplikate & Leerzeilen</h3>
+                    <p class="text-gray-600">Mehrfache Einträge, versteckte Leerzeichen, überflüssige Zeilen</p>
+                </div>
+                <div class="bg-white rounded-2xl p-8 shadow-lg">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Strukturprobleme</h3>
+                    <p class="text-gray-600">Zusammengefasste Zellen, verschachtelte Daten, falsche Spaltennamen</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 4: Dirty Data Example -->
+    <section class="slide flex items-center justify-center bg-white py-20">
+        <div class="max-w-7xl mx-auto px-8 w-full">
+            <div class="mb-8">
+                <p class="text-purple-600 font-semibold tracking-wide uppercase text-sm mb-2">Praxisbeispiel</p>
+                <h2 class="text-4xl font-bold text-gray-900">Schmutzige Daten: Kundenbestellungen</h2>
+                <p class="text-gray-600 mt-2">Eine typische CSV-Datei, wie sie aus ERP-Systemen oder Webshops kommt</p>
+            </div>
+            
+            <!-- Dirty Data Table -->
+            <div class="bg-gray-900 rounded-2xl overflow-hidden shadow-2xl">
+                <div class="bg-gray-800 px-6 py-4 flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                        <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                    </div>
+                    <span class="text-gray-400 text-sm font-mono">dirty_data_raw.csv</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full data-table text-left">
+                        <thead class="bg-gray-800 text-gray-300">
+                            <tr>
+                                <th class="px-4 py-3">kunden_id</th>
+                                <th class="px-4 py-3">name</th>
+                                <th class="px-4 py-3">email</th>
+                                <th class="px-4 py-3">bestelldatum</th>
+                                <th class="px-4 py-3">betrag</th>
+                                <th class="px-4 py-3">produkt</th>
+                                <th class="px-4 py-3">status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-300 divide-y divide-gray-700">
+                            <tr class="bg-red-900/20">
+                                <td class="px-4 py-3">001</td>
+                                <td class="px-4 py-3">  max mustermann  </td>
+                                <td class="px-4 py-3">MAX@EMAIL.COM</td>
+                                <td class="px-4 py-3">12.03.2024</td>
+                                <td class="px-4 py-3">€1.299,99</td>
+                                <td class="px-4 py-3">Laptop; Dell; XPS</td>
+                                <td class="px-4 py-3">bezahlt</td>
+                            </tr>
+                            <tr class="bg-red-900/20">
+                                <td class="px-4 py-3">002</td>
+                                <td class="px-4 py-3">ANNA Schmidt</td>
+                                <td class="px-4 py-3">anna.schmidt@email.de</td>
+                                <td class="px-4 py-3">2024-03-15</td>
+                                <td class="px-4 py-3">899.50</td>
+                                <td class="px-4 py-3">Handy-iPhone-14</td>
+                                <td class="px-4 py-3">OFFEN</td>
+                            </tr>
+                            <tr class="bg-red-900/20">
+                                <td class="px-4 py-3">001</td>
+                                <td class="px-4 py-3">Max Mustermann</td>
+                                <td class="px-4 py-3">max@email.com</td>
+                                <td class="px-4 py-3">15 März 2024</td>
+                                <td class="px-4 py-3">€ 450,00</td>
+                                <td class="px-4 py-3">Monitor|27"|4K</td>
+                                <td class="px-4 py-3">bezahlt</td>
+                            </tr>
+                            <tr class="bg-red-900/20">
+                                <td class="px-4 py-3">003</td>
+                                <td class="px-4 py-3">NULL</td>
+                                <td class="px-4 py-3">-</td>
+                                <td class="px-4 py-3"></td>
+                                <td class="px-4 py-3">N/A</td>
+                                <td class="px-4 py-3">Tastatur</td>
+                                <td class="px-4 py-3">storniert</td>
+                            </tr>
+                            <tr class="bg-red-900/20">
+                                <td class="px-4 py-3">004</td>
+                                <td class="px-4 py-3">Lisa Müller</td>
+                                <td class="px-4 py-3">lisa.mueller@company.com</td>
+                                <td class="px-4 py-3">03/20/2024</td>
+                                <td class="px-4 py-3">2.150,75 EUR</td>
+                                <td class="px-4 py-3">Drucker -- Laser</td>
+                                <td class="px-4 py-3">versendet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Problems List -->
+            <div class="mt-8 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="flex items-start space-x-3 bg-red-50 rounded-lg p-4">
+                    <span class="flex-shrink-0 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                    <div>
+                        <p class="font-semibold text-red-900 text-sm">Duplikate</p>
+                        <p class="text-red-700 text-xs">Kunde 001 doppelt</p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3 bg-orange-50 rounded-lg p-4">
+                    <span class="flex-shrink-0 w-6 h-6 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                    <div>
+                        <p class="font-semibold text-orange-900 text-sm">Inkonsistente Datumsformate</p>
+                        <p class="text-orange-700 text-xs">3 verschiedene Formate</p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3 bg-yellow-50 rounded-lg p-4">
+                    <span class="flex-shrink-0 w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                    <div>
+                        <p class="font-semibold text-yellow-900 text-sm">Falsche Zahlenformate</p>
+                        <p class="text-yellow-700 text-xs">€, EUR, Punkt, Komma</p>
+                    </div>
+                </div>
+                <div class="flex items-start space-x-3 bg-purple-50 rounded-lg p-4">
+                    <span class="flex-shrink-0 w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs font-bold">4</span>
+                    <div>
+                        <p class="font-semibold text-purple-900 text-sm">Leerzeichen & Groß-/Kleinschreibung</p>
+                        <p class="text-purple-700 text-xs">"  max mustermann  "</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 5: Shortcut 1 - Fill Down -->
+    <section class="slide flex items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50 py-20">
+        <div class="max-w-6xl mx-auto px-8 w-full">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <div class="inline-flex items-center space-x-2 bg-emerald-500 text-white rounded-full px-4 py-2 mb-6">
+                        <span class="font-bold">Shortcut #1</span>
+                    </div>
+                    <h2 class="text-5xl font-bold text-gray-900 mb-6">Fill Down</h2>
+                    <p class="text-xl text-gray-600 mb-8">Formeln und Werte blitzschnell nach unten kopieren – ohne Drag & Drop!</p>
+                    
+                    <div class="bg-white rounded-2xl p-6 shadow-lg mb-6">
+                        <div class="flex items-center justify-center space-x-4 mb-6">
+                            <div class="keyboard-key px-6 py-4 rounded-lg text-2xl font-bold text-gray-700">Ctrl</div>
+                            <span class="text-2xl text-gray-400">+</span>
+                            <div class="keyboard-key px-6 py-4 rounded-lg text-2xl font-bold text-gray-700">D</div>
+                        </div>
+                        <div class="flex items-center justify-center space-x-2 text-sm text-gray-500">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                            <span>Mac: ⌘ + D</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-6 h-6 text-emerald-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <p class="text-gray-700">Wählen Sie die Zelle mit der Formel <strong>und</strong> die Zellen darunter aus</p>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-6 h-6 text-emerald-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <p class="text-gray-700">Drücken Sie <kbd class="bg-gray-200 px-2 py-1 rounded text-sm">Ctrl + D</kbd></p>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-6 h-6 text-emerald-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <p class="text-gray-700">Perfekt für: Berechnungen, Formatierung, Datenverarbeitung</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                    <div class="bg-gray-800 px-4 py-3 flex items-center space-x-2">
+                        <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                        <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <span class="text-gray-400 text-sm ml-4">Beispiel: =PROPER(A2)</span>
+                    </div>
+                    <div class="p-6">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b-2 border-gray-200">
+                                    <th class="text-left py-2 text-gray-500">Vorher</th>
+                                    <th class="text-left py-2 text-gray-500">Nachher</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <tr>
+                                    <td class="py-3 font-mono text-red-600">max mustermann</td>
+                                    <td class="py-3 font-mono text-emerald-600 font-semibold">Max Mustermann ✓</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 font-mono text-red-600">ANNA Schmidt</td>
+                                    <td class="py-3 font-mono text-emerald-600 font-semibold">Anna Schmidt ✓</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 font-mono text-red-600">  Lisa Müller  </td>
+                                    <td class="py-3 font-mono text-emerald-600 font-semibold">Lisa Müller ✓</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="mt-4 p-4 bg-emerald-50 rounded-lg">
+                            <p class="text-sm text-emerald-800">
+                                <strong>Tipp:</strong> Kombinieren Sie mit <code class="bg-emerald-200 px-1 rounded">=TRIM(PROPER(A2))</code> für perfekte Namen!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 6: Shortcut 2 - Find and Replace -->
+    <section class="slide flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50 py-20">
+        <div class="max-w-6xl mx-auto px-8 w-full">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="order-2 lg:order-1">
+                    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                        <div class="bg-gray-800 px-4 py-3">
+                            <span class="text-gray-400 text-sm">Suchen und Ersetzen mit Regex</span>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="space-y-2">
+                                <label class="text-sm font-semibold text-gray-700">Suchen nach:</label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="text" value="[€$]|EUR|USD" readonly class="flex-1 bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 font-mono text-sm">
+                                    <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">Regex</span>
+                                </div>
+                                <p class="text-xs text-gray-500">Entfernt alle Währungssymbole</p>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-sm font-semibold text-gray-700">Ersetzen durch:</label>
+                                <input type="text" value="" readonly class="w-full bg-gray-100 border border-gray-300 rounded-lg px-4 py-2 font-mono text-sm">
+                                <p class="text-xs text-gray-500">Leer lassen für reine Zahlen</p>
+                            </div>
+                            <div class="flex items-center space-x-4 pt-4 border-t">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-4 h-4 border-2 border-blue-500 rounded bg-blue-500"></div>
+                                    <span class="text-sm">Reguläre Ausdrücke</span>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-4 h-4 border-2 border-gray-300 rounded"></div>
+                                    <span class="text-sm">Groß-/Kleinschreibung</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-1 lg:order-2">
+                    <div class="inline-flex items-center space-x-2 bg-blue-500 text-white rounded-full px-4 py-2 mb-6">
+                        <span class="font-bold">Shortcut #2</span>
+                    </div>
+                    <h2 class="text-5xl font-bold text-gray-900 mb-6">Find & Replace</h2>
+                    <p class="text-xl text-gray-600 mb-8">Mit regulären Ausdrücken komplexe Bereinigungen in Sekunden durchführen</p>
+                    
+                    <div class="bg-white rounded-2xl p-6 shadow-lg mb-6">
+                        <div class="flex items-center justify-center space-x-4 mb-6">
+                            <div class="keyboard-key px-5 py-4 rounded-lg text-xl font-bold text-gray-700">Ctrl</div>
+                            <span class="text-2xl text-gray-400">+</span>
+                            <div class="keyboard-key px-5 py-4 rounded-lg text-xl font-bold text-gray-700">H</div>
+                        </div>
+                        <div class="flex items-center justify-center space-x-2 text-sm text-gray-500">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+                            <span>Mac: ⌘ + Shift + H</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-6 h-6 text-blue-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-gray-700 font-semibold">Regex aktivieren</p>
+                                <p class="text-gray-600 text-sm">"Reguläre Ausdrücke suchen" ankreuzen</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-6 h-6 text-blue-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-gray-700 font-semibold">Power-Regex: <code class="bg-blue-100 px-1 rounded">[€$]|EUR|USD</code></p>
+                                <p class="text-gray-600 text-sm">Entfernt €, $, EUR, USD in einem Schritt</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-6 h-6 text-blue-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-gray-700 font-semibold">Bonus: <code class="bg-blue-100 px-1 rounded">^\s+|\s+$</code></p>
+                                <p class="text-gray-600 text-sm">Entfernt führende/nachfolgende Leerzeichen</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 7: Shortcut 3 - Remove Duplicates -->
+    <section class="slide flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50 py-20">
+        <div class="max-w-6xl mx-auto px-8 w-full">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <div class="inline-flex items-center space-x-2 bg-purple-500 text-white rounded-full px-4 py-2 mb-6">
+                        <span class="font-bold">Shortcut #3</span>
+                    </div>
+                    <h2 class="text-5xl font-bold text-gray-900 mb-6">Remove Duplicates</h2>
+                    <p class="text-xl text-gray-600 mb-8">Doppelte Einträge intelligent entfernen – mit Spaltenauswahl!</p>
+                    
+                    <div class="bg-white rounded-2xl p-6 shadow-lg mb-6">
+                        <div class="text-center mb-4">
+                            <p class="text-sm text-gray-500 mb-2">Menü-Navigation (kein direkter Shortcut)</p>
+                        </div>
+                        <div class="flex items-center justify-center space-x-2 flex-wrap">
+                            <div class="keyboard-key px-4 py-3 rounded-lg text-lg font-bold text-gray-700">Alt</div>
+                            <span class="text-gray-400">→</span>
+                            <div class="keyboard-key px-4 py-3 rounded-lg text-lg font-bold text-gray-700">D</div>
+                            <span class="text-gray-400">→</span>
+                            <div class="keyboard-key px-4 py-3 rounded-lg text-lg font-bold text-gray-700">R</div>
+                        </div>
+                        <p class="text-center text-sm text-gray-500 mt-3">Daten → Duplikate entfernen</p>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-6 h-6 text-purple-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-gray-700 font-semibold">Spalten wählen</p>
+                                <p class="text-gray-600 text-sm">Nur kunden_id = echte Duplikate finden</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-6 h-6 text-purple-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-gray-700 font-semibold">Kopfzeile beachten</p>
+                                <p class="text-gray-600 text-sm">"Daten haben Kopfzeile" immer aktivieren</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-6 h-6 text-purple-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-gray-700 font-semibold">Vorschau nutzen</p>
+                                <p class="text-gray-600 text-sm">Vorher Backup erstellen!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                    <div class="bg-gray-800 px-4 py-3">
+                        <span class="text-gray-400 text-sm">Duplikate-Dialog</span>
+                    </div>
+                    <div class="p-6">
+                        <div class="border-2 border-purple-200 rounded-xl p-4 mb-4">
+                            <h4 class="font-semibold text-gray-900 mb-4">Spalten mit Duplikaten entfernen</h4>
+                            <div class="space-y-3">
+                                <label class="flex items-center space-x-3">
+                                    <input type="checkbox" checked class="w-5 h-5 text-purple-600 rounded">
+                                    <span class="text-gray-700">kunden_id</span>
+                                    <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">✓ Empfohlen</span>
+                                </label>
+                                <label class="flex items-center space-x-3">
+                                    <input type="checkbox" class="w-5 h-5 text-purple-600 rounded">
+                                    <span class="text-gray-700">name</span>
+                                </label>
+                                <label class="flex items-center space-x-3">
+                                    <input type="checkbox" class="w-5 h-5 text-purple-600 rounded">
+                                    <span class="text-gray-700">email</span>
+                                </label>
+                                <label class="flex items-center space-x-3">
+                                    <input type="checkbox" class="w-5 h-5 text-purple-600 rounded">
+                                    <span class="text-gray-700">bestelldatum</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <p class="text-sm text-purple-800">
+                                <strong>Ergebnis:</strong> 1 Duplikat gefunden und entfernt<br>
+                                <span class="text-purple-600">Zeilen vorher: 5 → Nachher: 4</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 8: Shortcut 4 - Text to Columns -->
+    <section class="slide flex items-center justify-center bg-gradient-to-br from-orange-50 to-amber-50 py-20">
+        <div class="max-w-6xl mx-auto px-8 w-full">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="order-2 lg:order-1">
+                    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                        <div class="bg-gray-800 px-4 py-3">
+                            <span class="text-gray-400 text-sm">Text in Spalten aufteilen</span>
+                        </div>
+                        <div class="p-6">
+                            <div class="mb-6">
+                                <p class="text-sm font-semibold text-gray-700 mb-2">Original:</p>
+                                <div class="bg-gray-100 rounded-lg p-3 font-mono text-sm">Laptop; Dell; XPS 13</div>
+                            </div>
+                            <div class="flex justify-center mb-6">
+                                <svg class="w-8 h-8 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                                </svg>
+                            </div>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div class="bg-orange-50 rounded-lg p-3 text-center">
+                                    <p class="text-xs text-gray-500">Kategorie</p>
+                                    <p class="font-semibold text-orange-700">Laptop</p>
+                                </div>
+                                <div class="bg-orange-50 rounded-lg p-3 text-center">
+                                    <p class="text-xs text-gray-500">Marke</p>
+                                    <p class="font-semibold text-orange-700">Dell</p>
+                                </div>
+                                <div class="bg-orange-50 rounded-lg p-3 text-center">
+                                    <p class="text-xs text-gray-500">Modell</p>
+                                    <p class="font-semibold text-orange-700">XPS 13</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 p-3 bg-amber-50 rounded-lg">
+                                <p class="text-xs text-amber-800">
+                                    <strong>Trennzeichen:</strong> Semikolon <code class="bg-amber-200 px-1 rounded">;</code>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="order-1 lg:order-2">
+                    <div class="inline-flex items-center space-x-2 bg-orange-500 text-white rounded-full px-4 py-2 mb-6">
+                        <span class="font-bold">Shortcut #4</span>
+                    </div>
+                    <h2 class="text-5xl font-bold text-gray-900 mb-6">Text to Columns</h2>
+                    <p class="text-xl text-gray-600 mb-8">Zusammengefasste Daten in separate Spalten aufteilen – mit benutzerdefinierten Trennzeichen!</p>
+                    
+                    <div class="bg-white rounded-2xl p-6 shadow-lg mb-6">
+                        <div class="text-center mb-4">
+                            <p class="text-sm text-gray-500 mb-2">Menü-Navigation</p>
+                        </div>
+                        <div class="flex items-center justify-center space-x-2 flex-wrap">
+                            <div class="keyboard-key px-4 py-3 rounded-lg text-lg font-bold text-gray-700">Alt</div>
+                            <span class="text-gray-400">→</span>
+                            <div class="keyboard-key px-4 py-3 rounded-lg text-lg font-bold text-gray-700">D</div>
+                            <span class="text-gray-400">→</span>
+                            <div class="keyboard-key px-4 py-3 rounded-lg text-lg font-bold text-gray-700">E</div>
+                        </div>
+                        <p class="text-center text-sm text-gray-500 mt-3">Daten → Text in Spalten</p>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-6 h-6 text-orange-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                            </svg>
+                            <div>
+                                <p class="text-gray-700 font-semibold">Benutzerdefiniert wählen</p>
+                                <p class="text-gray-600 text-sm">Nicht nur Komma – auch <code class="bg-orange-100 px-1 rounded">;</code> <code class="bg-orange-100 px-1 rounded">|</code> <code class="bg-orange-100 px-1 rounded">--</code></p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-6 h-6 text-orange-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                            </svg>
+                            <div>
+                                <p class="text-gray-700 font-semibold">Mehrere Trennzeichen</p>
+                                <p class="text-gray-600 text-sm">"Als Trennzeichen behandeln" für komplexe Fälle</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-6 h-6 text-orange-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                            </svg>
+                            <div>
+                                <p class="text-gray-700 font-semibold">Datumserkennung</p>
+                                <p class="text-gray-600 text-sm">Automatische Formatkonvertierung aktivieren</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 9: Shortcut 5 - Array Formulas -->
+    <section class="slide flex items-center justify-center bg-gradient-to-br from-pink-50 to-rose-50 py-20">
+        <div class="max-w-6xl mx-auto px-8 w-full">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <div class="inline-flex items-center space-x-2 bg-pink-500 text-white rounded-full px-4 py-2 mb-6">
+                        <span class="font-bold">Shortcut #5</span>
+                        <span class="bg-white/20 px-2 py-0.5 rounded text-xs">PROFI-TIPP</span>
+                    </div>
+                    <h2 class="text-5xl font-bold text-gray-900 mb-6">ARRAYFORMULA</h2>
+                    <p class="text-xl text-gray-600 mb-8">Eine Formel für tausende Zeilen – die magische <kbd class="bg-gray-200 px-2 py-1 rounded">Ctrl</kbd> + <kbd class="bg-gray-200 px-2 py-1 rounded">Shift</kbd> + <kbd class="bg-gray-200 px-2 py-1 rounded">Enter</kbd> Alternative!</p>
+                    
+                    <div class="bg-white rounded-2xl p-6 shadow-lg mb-6">
+                        <div class="bg-gray-900 rounded-lg p-4 font-mono text-sm">
+                            <p class="text-pink-400">=ARRAYFORMULA(</p>
+                            <p class="text-cyan-400 pl-4">IF(A2:A="", "",</p>
+                            <p class="text-green-400 pl-8">TRIM(</p>
+                            <p class="text-yellow-400 pl-12">PROPER(A2:A)</p>
+                            <p class="text-green-400 pl-8">)</p>
+                            <p class="text-cyan-400 pl-4">)</p>
+                            <p class="text-pink-400">)</p>
+                        </div>
+                        <p class="text-center text-sm text-gray-500 mt-3">Eine Zelle = Unendliche Zeilen</p>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-6 h-6 text-pink-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-gray-700 font-semibold">Bereich statt Zelle</p>
+                                <p class="text-gray-600 text-sm"><code class="bg-pink-100 px-1 rounded">A2:A</code> statt <code class="bg-pink-100 px-1 rounded">A2</code> für ganze Spalte</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-6 h-6 text-pink-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-gray-700 font-semibold">IF für leere Zellen</p>
+                                <p class="text-gray-600 text-sm">Vermeidet <code class="bg-pink-100 px-1 rounded">#N/A</code> Fehler bei leeren Reihen</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-3">
+                            <svg class="w-6 h-6 text-pink-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-gray-700 font-semibold">Performance-Boost</p>
+                                <p class="text-gray-600 text-sm">Eine Formel statt 10.000 = schnelleres Sheet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                    <div class="bg-gray-800 px-4 py-3 flex items-center justify-between">
+                        <span class="text-gray-400 text-sm">ARRAYFORMULA Magic</span>
+                        <span class="text-xs bg-pink-500 text-white px-2 py-1 rounded">LIVE</span>
+                    </div>
+                    <div class="p-6">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead>
+                                    <tr class="border-b-2 border-gray-200">
+                                        <th class="text-left py-2 text-gray-500">Rohdaten (A)</th>
+                                        <th class="text-left py-2 text-pink-600">Mit ARRAYFORMULA (B)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100">
+                                    <tr>
+                                        <td class="py-2 font-mono text-gray-600">max mustermann</td>
+                                        <td class="py-2 font-mono text-pink-600 font-semibold">Max Mustermann</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-mono text-gray-600">ANNA SCHMIDT</td>
+                                        <td class="py-2 font-mono text-pink-600 font-semibold">Anna Schmidt</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-mono text-gray-600">  lisa müller  </td>
+                                        <td class="py-2 font-mono text-pink-600 font-semibold">Lisa Müller</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-mono text-gray-400">(leer)</td>
+                                        <td class="py-2 font-mono text-gray-400">(leer)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 font-mono text-gray-600">HANS MEIER</td>
+                                        <td class="py-2 font-mono text-pink-600 font-semibold">Hans Meier</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-4 p-4 bg-pink-50 rounded-lg">
+                            <p class="text-sm text-pink-800">
+                                <strong>🎯 Der Clou:</strong> Neue Daten in Spalte A werden <strong>automatisch</strong> bereinigt!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 10: Complete Workflow -->
+    <section class="slide flex items-center justify-center bg-white py-20">
+        <div class="max-w-6xl mx-auto px-8 w-full">
+            <div class="text-center mb-12">
+                <p class="text-emerald-600 font-semibold tracking-wide uppercase text-sm mb-2">Kompletter Workflow</p>
+                <h2 class="text-5xl font-bold text-gray-900 mb-4">Von Chaos zu Klarheit</h2>
+                <p class="text-xl text-gray-600">Schritt-für-Schritt Datenreinigung mit allen Shortcuts</p>
+            </div>
+
+            <div class="relative">
+                <!-- Timeline line -->
+                <div class="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-emerald-500 via-blue-500 via-purple-500 via-orange-500 to-pink-500"></div>
+
+                <div class="space-y-8">
+                    <!-- Step 1 -->
+                    <div class="flex items-start space-x-6">
+                        <div class="flex-shrink-0 w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg relative z-10">1</div>
+                        <div class="flex-1 bg-emerald-50 rounded-2xl p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-xl font-bold text-gray-900">Duplikate entfernen</h3>
+                                <span class="text-sm bg-emerald-200 text-emerald-800 px-3 py-1 rounded-full">Alt → D → R</span>
+                            </div>
+                            <p class="text-gray-600">Wählen Sie <strong>kunden_id</strong> als Kriterium. 1 Duplikat gefunden und entfernt.</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="flex items-start space-x-6">
+                        <div class="flex-shrink-0 w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg relative z-10">2</div>
+                        <div class="flex-1 bg-blue-50 rounded-2xl p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-xl font-bold text-gray-900">Währungssymbole bereinigen</h3>
+                                <span class="text-sm bg-blue-200 text-blue-800 px-3 py-1 rounded-full">Ctrl + H</span>
+                            </div>
+                            <p class="text-gray-600">Regex: <code class="bg-blue-200 px-1 rounded">[€$]|EUR|USD|\s</code> → Ersetzen durch: (leer)</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="flex items-start space-x-6">
+                        <div class="flex-shrink-0 w-16 h-16 bg-purple-500 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg relative z-10">3</div>
+                        <div class="flex-1 bg-purple-50 rounded-2xl p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-xl font-bold text-gray-900">Produktdaten aufteilen</h3>
+                                <span class="text-sm bg-purple-200 text-purple-800 px-3 py-1 rounded-full">Alt → D → E</span>
+                            </div>
+                            <p class="text-gray-600">Trennzeichen: <code class="bg-purple-200 px-1 rounded">;</code> und <code class="bg-purple-200 px-1 rounded">|</code> für Kategorie, Marke, Modell</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="flex items-start space-x-6">
+                        <div class="flex-shrink-0 w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg relative z-10">4</div>
+                        <div class="flex-1 bg-orange-50 rounded-2xl p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-xl font-bold text-gray-900">Namen bereinigen</h3>
+                                <span class="text-sm bg-orange-200 text-orange-800 px-3 py-1 rounded-full">ARRAYFORMULA</span>
+                            </div>
+                            <p class="text-gray-600"><code class="bg-orange-200 px-1 rounded">=ARRAYFORMULA(TRIM(PROPER(A2:A)))</code> für automatische Bereinigung</p>
+                        </div>
+                    </div>
+
+                    <!-- Step 5 -->
+                    <div class="flex items-start space-x-6">
+                        <div class="flex-shrink-0 w-16 h-16 bg-pink-500 rounded-2xl flex items-center justify-center text-white font-bold text-xl shadow-lg relative z-10">5</div>
+                        <div class="flex-1 bg-pink-50 rounded-2xl p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-xl font-bold text-gray-900">Formeln kopieren</h3>
+                                <span class="text-sm bg-pink-200 text-pink-800 px-3 py-1 rounded-full">Ctrl + D</span>
+                            </div>
+                            <p class="text-gray-600">Datumskonvertierungsformel auf alle Zeilen anwenden</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Slide 11: Clean Data Result -->
+    <section class="slide flex items-center justify-center bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 py-20">
+        <div class="max-w-7xl mx-auto px-8 w-full">
+            <div class="text-center mb-8">
+                <p class="text-emerald-600 font-semibold tracking-wide uppercase text-sm mb-2">Ergebnis</p>
+                <h2 class="text-4xl font-bold text-gray-900">Saubere Daten – Analyse-bereit!</h2>
+            </div>
+
+            <!-- Clean Data Table -->
+            <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                <div class="bg-emerald-600 px-6 py-4 flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="text-white font-semibold">clean_data_final.csv</span>
+                    </div>
+                    <span class="text-emerald-100 text-sm">✓ Bereit für Pivot-Tabellen & Diagramme</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full data-table text-left">
+                        <thead class="bg-emerald-50 text-emerald-900"><th class="px-4 py-3">kunden_id</th>
+                        <th class="px-4 py-3">name</th>
+                        <th class="px-4 py-3">email</th>
+                        <th class="px-4 py-3">bestelldatum</th>
+                        <th class="px-4 py-3">betrag_eur</th>
+                        <th class="px-4 py-3">kategorie</th>
+                        <th class="px-4 py-3">marke</th>
+                        <th class="px-4 py-3">modell</th>
+                        <th class="px-4 py-3">status</th>
+                        </tr>
+                            <tr><tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-mono">001</td>
+                                <td class="px-4 py-3 font-semibold">Max Mustermann</td>
+                                <td class="px-4 py-3">max@email.com</td>
+                                <td class="px-4 py-3">2024-03-12</td>
+                                <td class="px-4 py-3 text-right font-mono">1299.99</td>
+                                <td class="px-4 py-3"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Laptop</span></td>
+                                <td class="px-4 py-3">Dell</td>
+                                <td class="px-4 py-3">XPS</td>
+                                <td class="px-4 py-3"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">bezahlt</span></td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-mono">002</td>
+                                <td class="px-4 py-3 font-semibold">Anna Schmidt</td>
+                                <td class="px-4 py-3">anna.schmidt@email.de</td>
+                                <td class="px-4 py-3">2024-03-15</td>
+                                <td class="px-4 py-3 text-right font-mono">899.50</td>
+                                <td class="px-4 py-3"><span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">Handy</span></td>
+                                <td class="px-4 py-3">Apple</td>
+                                <td class="px-4 py-3">iPhone 14</td>
+                                <td class="px-4 py-3"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">offen</span></td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-mono">003</td>
+                                <td class="px-4 py-3 font-semibold">Lisa Müller</td>
+                                <td class="px-4 py-3">lisa.mueller@company.com</td>
+                                <td class="px-4 py-3">2024-03-20</td>
+                                <td class="px-4 py-3 text-right font-mono">2150.75</td>
+                                <td class="px-4 py-3"><span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs">Drucker</span></td>
+                                <td class="px-4 py-3">HP</td>
+                                <td class="px-4 py-3">Laser</td>
+                                <td class="px-4 py-3"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">versendet</span></td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-mono">004</td>
+                                <td class="px-4 py-3 font-semibold">Thomas Weber</td>
+                                <td class="px-4 py-3">thomas.weber@tech.de</td>
+                                <td class="px-4 py-3">2024-03-22</td>
+                                <td class="px-4 py-3 text-right font-mono">2499.00</td>
+                                <td class="px-4 py-3"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Laptop</span></td>
+                                <td class="px-4 py-3">Lenovo</td>
+                                <td class="px-4 py-3">ThinkPad X1</td>
+                                <td class="px-4 py-3"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">bezahlt</span></td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-mono">005</td>
+                                <td class="px-4 py-3 font-semibold">Sarah Klein</td>
+                                <td class="px-4 py-3">s.klein@startup.io</td>
+                                <td class="px-4 py-3">2024-03-25</td>
+                                <td class="px-4 py-3 text-right font-mono">129.99</td>
+                                <td class="px-4 py-3"><span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">Zubehör</span></td>
+                                <td class="px-4 py-3">Logitech</td>
+                                <td class="px-4 py-3">MX Master 3</td>
+                                <td class="px-4 py-3"><span class="bg-gray-100 text-gray-800 px-2 py-1 rounded text-xs">storniert</span></td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-4 py-3 font-mono">006</td>
+                                <td class="px-4 py-3 font-semibold">Michael Braun</td>
+                                <td class="px-4 py-3">m.braun@enterprise.com</td>
+                                <td class="px-4 py-3">2024-03-28</td>
+                                <td class="px-4 py-3 text-right font-mono">1899.00</td>
+                                <td class="px-4 py-3"><span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Monitor</span></td>
+                                <td class="px-4 py-3">Samsung</td>
+                                <td class="px-4 py-3">Odyssey G9</td>
+                                <td class="px-4 py-3"><span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">offen</span></td>
+                                
+                     
