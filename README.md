@@ -35,7 +35,6 @@ Deshalb habe ich diese Präsentation gemacht. Sie zeigt die wichtigsten Tricks u
 Die fertige Präsentation findest du hier:  
 **https://datenreinigung.netlify.app**
 
-Oder du kannst einfach die index.html öffnen.
 
 ## Screenshots
 
